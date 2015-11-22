@@ -9,6 +9,9 @@ libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.12.5" % "test"
 )
 
-initialCommands in Test in console := "import org.scalacheck.Prop._"
+initialCommands in Test in console :=
+  """import org.scalacheck.Prop._
+    |import org.scalacheck._
+  """.stripMargin
 
 fork in run := true
