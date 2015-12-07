@@ -13,6 +13,7 @@ package object poker {
   import Util._
 
   type CardRank = Int
+  type HandRank = Int
 
   sealed abstract class Suit(val symbol: String)
 
@@ -38,8 +39,7 @@ package object poker {
 
   case class Rank(handRank: Int)(val tieBreakers: Vector[CardRank]) extends Ordered[Rank] {
 
-    override def compare(otherHand: Rank): Int =
-      Ordering[(Int, Vector[CardRank])].compare((handRank, tieBreakers), (otherHand.handRank, otherHand.tieBreakers))
+    override def compare(otherHand: Rank): Int = ???
 
     def describeWinner(otherHand: Rank): String = compareTo(otherHand) match {
       case x if x > 0 => "I won"
@@ -61,43 +61,6 @@ package object poker {
   val FourOfAKind = handsByRank(7)
   val StraightFlush = handsByRank(8)
 
-  def rankHand(hand: Vector[Card]) = {
-    if (hand.size != 5) {
-      throw new IllegalArgumentException
-    }
-
-    // eg Seq(4D, 6C, 6S, KH, AS) -> Map(1 -> Vector(4,K,A), 2 -> Vector(6))
-    val frequencyToCardRanks = hand
-      .groupBy(_.rank)
-      .mapValues(_.size)
-      .groupBy(_._2)
-      .mapValues(_.keys.toVector)
-
-    val values = hand.map(_.rank)
-    lazy val highestCard = values.sorted.reverse.take(1)
-    lazy val isStraight = values.sorted.reverse.differences.forall(_ == 1)
-    val isFlush = hand.map(_.suit).toSet.size == 1
-
-    if (isStraight && isFlush) {
-      StraightFlush(highestCard)
-    } else if (frequencyToCardRanks.contains(4)) {
-      FourOfAKind(frequencyToCardRanks(4))
-    } else if (frequencyToCardRanks.keySet == Set(3, 2)) {
-      FullHouse(frequencyToCardRanks(3))
-    } else if (isFlush) {
-      Flush(highestCard)
-    } else if (isStraight) {
-      Straight(highestCard)
-    } else if (frequencyToCardRanks.contains(3)) {
-      ThreeOfAKind(frequencyToCardRanks(3))
-    } else if (frequencyToCardRanks.contains(2) && frequencyToCardRanks(2).size == 2) {
-      TwoPairs(frequencyToCardRanks(2).sorted.reverse ++ frequencyToCardRanks(1))
-    } else if (frequencyToCardRanks.contains(2)) {
-      Pair(frequencyToCardRanks(2) ++ frequencyToCardRanks(1).sorted.reverse)
-    } else {
-      HighCard(values.sorted.reverse)
-    }
-  }
-
+  def rankHand(hand: Vector[Card]): Rank = ???
 
 }
