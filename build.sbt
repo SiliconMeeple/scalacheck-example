@@ -11,6 +11,6 @@ libraryDependencies ++= Seq(
 
 
 
-initialCommands in Test in console := "import org.scalacheck.Prop._; import org.scalacheck._)"
+initialCommands in Test in console := "import org.scalacheck.Prop._; import org.scalacheck._"
 
 fork in run := true
