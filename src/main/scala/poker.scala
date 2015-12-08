@@ -81,7 +81,7 @@ package object poker {
 
     val values = hand.map(_.rank)
     lazy val highestCard = values.sorted.reverse.take(1)
-    lazy val isStraight = values.sorted.differences.forall(_ == 1)
+    lazy val isStraight = values.differences.forall(_ == 1)
     val isFlush = hand.map(_.suit).toSet.size == 1
 
     if (isStraight && isFlush) {
