@@ -4,13 +4,13 @@ For example, here is a comparison between the binary and result of your function
 
 | Decimal | Binary | Binary reflected Gray code |
 |---------|--------|----------------------------|
-| 1       | 1      |    1                       |
-| 2       | 10     |   11                       |
-| 3       | 11     |   10                       |
-| 4       | 100    |  110                       |
-| 5       | 101    |  111                       |
-| 6       | 110    |  101                       |
-| 7       | 111    |  100                       |
+| 1       | 0001   | 0001                       |
+| 2       | 0010   | 0011                       |
+| 3       | 0011   | 0010                       |
+| 4       | 0100   | 0110                       |
+| 5       | 0101   | 0111                       |
+| 6       | 0110   | 0101                       |
+| 7       | 0111   | 0100                       |
 | 8       | 1000   | 1100                       |
       
 Create functions to encode a positive integers ranging from 0 to 127 to and from Gray code.

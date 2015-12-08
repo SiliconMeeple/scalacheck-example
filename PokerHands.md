@@ -67,3 +67,32 @@ Output: Black wins - high card: 9
 
 Input: Black: 2H 3D 5S 9C KD White: 2D 3H 5C 9S KH
 Output: Tie
+
+
+Existing code
+
+There is, if you choose to use it, already a poker model in 
+the `poker` package object, and some properties written up 
+in the PokerHandProperties object.
+
+All you need to do is fill in the generators in PokerGenerators
+that make the properties pass using the supplied generators in 
+[`org.scalacheck.Gen`](https://goo.gl/7ZOlnX) .
+
+There is also an implementation of scoring already. 
+Unfortunately, it was written rather late at night, in the 
+company of a friendly beer or two, so you may find as you fill in 
+the generators that there are errors in the code, properties or both.
+
+The goal of the exercise is to get some experience writing generators,
+but feel free to discard the existing properties or existing code if
+you want.
+
+If you finish early, add any properties you think are missing, and then
+try adding properties and code to parse string representations of the 
+cards into the model as above. 
+
+For example:
+
+scala> parseAndScore("Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C AH")
+res0 = "White wins - high card: Ace" 

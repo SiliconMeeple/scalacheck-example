@@ -1,19 +1,7 @@
 import scala.math.Ordering.Implicits._
 
 package object poker {
-
-  object Util {
-    def Desc[T : Ordering] = implicitly[Ordering[T]].reverse
-
-    implicit class VectorWithDifferences[T](l: Vector[T]) {
-      def differences(implicit num: Numeric[T]) = l.sliding(2).map(s =>  num.minus(s.head, s(1)))
-    }
-  }
-
   import Util._
-
-  type CardRank = Int
-  type HandRank = Int
 
   sealed abstract class Suit(val symbol: String)
 
@@ -23,6 +11,10 @@ package object poker {
   case object Spades extends Suit("♤")
 
   val allSuits: Vector[Suit] = Vector(Diamonds, Hearts, Clubs, Spades)
+
+
+  // Cards are ranked 2 to 14 from smallest (2) to highest (10, Jack, Queen, King, Ace)
+  type CardRank = Int
   val allCardRanks: Vector[CardRank] = (2 to 14).toVector
 
   case class Card(suit: Suit, rank: CardRank) {
@@ -37,10 +29,18 @@ package object poker {
     }) + suit.symbol
   }
 
+  // Hands are ranked from smallest - a High Card which has a rank of 0,
+  // through to highest - a straight flush which has a rank of 8.
+  // When constructing a hand rank, a vector of tie-breakers should be provided.
+  type HandRank = Int
   case class Rank(handRank: Int)(val tieBreakers: Vector[CardRank]) extends Ordered[Rank] {
 
-    override def compare(otherHand: Rank): Int = ???
+    // TODO
+    override def compare(otherHand: Rank): Int =
+      ???
 
+    // A useless string description unless, like me, you
+    // regularly forget what the sign of the result of compareTo means.
     def describeWinner(otherHand: Rank): String = compareTo(otherHand) match {
       case x if x > 0 => "I won"
       case 0 => "Tie"
@@ -48,9 +48,14 @@ package object poker {
     }
   }
 
+  // Create a map of the possible hand rank constructors by their numeric rank.
+  // To construct a pair of kings with A,8,2 tiebreakers, call:
+  // val rank = handsByRank(1)(Vector(14,8,2)
   val handsByRank: Map[Int, Vector[CardRank] => Rank] =
     (0 to 8).map(i => i -> Rank(i) _)(collection.breakOut)
 
+  // Helpers to construct specific ranks. Our earlier pair becomes:
+  // val rank = Pair(Vector(14,8,2))
   val HighCard = handsByRank(0)
   val Pair = handsByRank(1)
   val TwoPairs = handsByRank(2)
@@ -61,6 +66,49 @@ package object poker {
   val FourOfAKind = handsByRank(7)
   val StraightFlush = handsByRank(8)
 
-  def rankHand(hand: Vector[Card]): Rank = ???
+  // Rank a poker hand.
+  //
+  // Throws: IllegalArgumentException if a valid poker hand isn't supplied.
+  def rankHand(hand: Vector[Card]): Rank = {
 
+    // eg Seq(4D, 6C, 6S, KH, AS) -> Map(1 -> Vector(4,K,A), 2 -> Vector(6))
+    val frequencyToCardRanks: Map[HandRank, Vector[CardRank]] =
+      hand
+      .groupBy(_.rank)            // Map(4 -> Seq(4D), 6 -> Seq(6C, 6S), K -> Seq(KH), A -> Seq(AS))
+      .mapValues(_.size)          // Map(4 -> 1, 6 -> 2, K -> 1, A -> 1)
+      .groupBy(_._2)              // Map(1 -> Map(4 -> 1, K -> 1, A -> 1), 2 -> Map(6 -> 2))
+      .mapValues(_.keys.toVector) // Map(1 -> Vector(4,K,A), 2 -> Vector(6))
+
+    val values = hand.map(_.rank)
+    lazy val highestCard = values.sorted.reverse.take(1)
+    lazy val isStraight = values.sorted.differences.forall(_ == 1)
+    val isFlush = hand.map(_.suit).toSet.size == 1
+
+    if (isStraight && isFlush) {
+      StraightFlush(highestCard)
+    } else if (frequencyToCardRanks.contains(4)) {
+      FourOfAKind(frequencyToCardRanks(4))
+    } else if (frequencyToCardRanks.keySet == Set(3, 2)) {
+      FullHouse(frequencyToCardRanks(3))
+    } else if (isFlush) {
+      Straight(highestCard)
+    } else if (isStraight) {
+      Flush(highestCard)
+    } else if (frequencyToCardRanks.contains(3)) {
+      ThreeOfAKind(frequencyToCardRanks(3))
+    } else if (frequencyToCardRanks.contains(2) && frequencyToCardRanks(2).size == 2) {
+      TwoPairs(frequencyToCardRanks(2) ++ frequencyToCardRanks(1))
+    } else if (frequencyToCardRanks.contains(2)) {
+      Pair(frequencyToCardRanks(2))
+    } else {
+      HighCard(values.sorted.reverse)
+    }
+  }
+
+
+  object Util {
+    implicit class VectorWithDifferences[T](l: Vector[T]) {
+      def differences(implicit num: Numeric[T]) = l.sliding(2).map(s => s.reduce(num.minus))
+    }
+  }
 }
