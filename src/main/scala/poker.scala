@@ -72,12 +72,7 @@ package object poker {
   def rankHand(hand: Vector[Card]): Rank = {
 
     // eg Seq(4D, 6C, 6S, KH, AS) -> Map(1 -> Vector(4,K,A), 2 -> Vector(6))
-    val frequencyToCardRanks: Map[HandRank, Vector[CardRank]] =
-      hand
-      .groupBy(_.rank)            // Map(4 -> Seq(4D), 6 -> Seq(6C, 6S), K -> Seq(KH), A -> Seq(AS))
-      .mapValues(_.size)          // Map(4 -> 1, 6 -> 2, K -> 1, A -> 1)
-      .groupBy(_._2)              // Map(1 -> Map(4 -> 1, K -> 1, A -> 1), 2 -> Map(6 -> 2))
-      .mapValues(_.keys.toVector) // Map(1 -> Vector(4,K,A), 2 -> Vector(6))
+    val frequencyToCardRanks: Map[Int, Vector[CardRank]] = countCardRanks(hand)
 
     val values = hand.map(_.rank)
     lazy val highestCard = values.sorted.reverse.take(1)
@@ -105,6 +100,14 @@ package object poker {
     }
   }
 
+
+  private def countCardRanks(hand: Vector[Card]): Map[Int, Vector[CardRank]] = {
+    val rankToCards = hand.groupBy(_.rank)
+    val rankToCount = rankToCards.mapValues(_.size)
+    val countToRankAndCount = rankToCount.groupBy(_._2)
+    val countToRanks = countToRankAndCount.mapValues(_.keys.toVector)
+    countToRanks
+  }
 
   object Util {
     implicit class VectorWithDifferences[T](l: Vector[T]) {
