@@ -8,7 +8,7 @@ If you plan to attend the workshop, please clone the repository and run:
 sbt test
 ```
 
-After successfully downloading the necessary libraries, it should end up looking something like the following:
+After successfully downloading the necessary libraries, it should end up with a bunch of failed tests, looking something like the following:
 
 ![Image of a successful sbt test](/images/scalacheck-example-image.png)
 
