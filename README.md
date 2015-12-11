@@ -8,11 +8,9 @@ If you plan to attend the workshop, please clone the repository and run:
 sbt test
 ```
 
-After successfully downloading the necessary libraries, it should end up with a bunch of failed tests, looking something like the following:
+After successfully downloading the necessary libraries, it should fail to run the tests because of missing implementations.
 
-![Image of a successful sbt test](/images/scalacheck-example-image.png)
-
-Please use the [gitter chatroom](https://gitter.im/HolyHaddock/scalacheck-example) for the project, or contact me via gmail or twitter if it does not.
+Please use the [gitter chatroom](https://gitter.im/HolyHaddock/scalacheck-example) for the project, or contact me via gmail or twitter if there is trouble downloading scalacheck.
 
 There are likely to be updates between today and the workshop, but the libraries being used should not change, so running this now will save time and wi-fi on the day.
 
