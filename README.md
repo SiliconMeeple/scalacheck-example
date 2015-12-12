@@ -22,6 +22,12 @@ To get started interactively investigating the scalacheck library, this project 
    sbt test:console
 ```
 
+## Slides
 
+Slides that accompany the session can be found [here](https://goo.gl/zytQHm) (it's on a free heroku dyno, so may take a while to respond the first time).
+
+## Solutions
+
+Solutions to the exercises can be found by checking out the answers branch.
 
 [![Join the chat at https://gitter.im/HolyHaddock/scalacheck-example](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/HolyHaddock/scalacheck-example?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
