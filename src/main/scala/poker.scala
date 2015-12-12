@@ -35,9 +35,8 @@ package object poker {
   type HandRank = Int
   case class Rank(handRank: Int)(val tieBreakers: Vector[CardRank]) extends Ordered[Rank] {
 
-    // TODO
     override def compare(otherHand: Rank): Int =
-      ???
+      Ordering[(Int, Vector[CardRank])].compare((handRank, tieBreakers), (otherHand.handRank, otherHand.tieBreakers))
 
     // A useless string description unless, like me, you
     // regularly forget what the sign of the result of compareTo means.
@@ -71,6 +70,10 @@ package object poker {
   // Throws: IllegalArgumentException if a valid poker hand isn't supplied.
   def rankHand(hand: Vector[Card]): Rank = {
 
+    if (hand.size != 5) {
+      throw new IllegalArgumentException
+    }
+
     // eg Seq(4D, 6C, 6S, KH, AS) -> Map(1 -> Vector(4,K,A), 2 -> Vector(6))
     val frequencyToCardRanks: Map[Int, Vector[CardRank]] = countCardRanks(hand)
 
@@ -86,15 +89,15 @@ package object poker {
     } else if (frequencyToCardRanks.keySet == Set(3, 2)) {
       FullHouse(frequencyToCardRanks(3))
     } else if (isFlush) {
-      Straight(highestCard)
-    } else if (isStraight) {
       Flush(highestCard)
+    } else if (isStraight) {
+      Straight(highestCard)
     } else if (frequencyToCardRanks.contains(3)) {
       ThreeOfAKind(frequencyToCardRanks(3))
     } else if (frequencyToCardRanks.contains(2) && frequencyToCardRanks(2).size == 2) {
-      TwoPairs(frequencyToCardRanks(2) ++ frequencyToCardRanks(1))
+      TwoPairs(frequencyToCardRanks(2).sorted.reverse ++ frequencyToCardRanks(1))
     } else if (frequencyToCardRanks.contains(2)) {
-      Pair(frequencyToCardRanks(2))
+      Pair(frequencyToCardRanks(2) ++ frequencyToCardRanks(1).sorted.reverse)
     } else {
       HighCard(values.sorted.reverse)
     }

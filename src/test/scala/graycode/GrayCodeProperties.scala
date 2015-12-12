@@ -28,7 +28,7 @@ object GrayCodeProperties extends Properties("Binary reflected gray code") {
     encode(x).zip(x.toBinaryString).sliding(2).forall {
       case Seq((g0, b0), (g1, b1)) =>
         if (b0 == '1') {
-          g1 == b1
+          g1 != b1
         } else {
           g1 == b1
         }
